@@ -60,6 +60,24 @@ nav a:hover{color:var(--accent)}
 /* Контакты */
 .contact{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center}
 .contact p{color:var(--mut);margin-bottom:20px}
+
+/* Форма обратной связи */
+.or{color:var(--mut);margin:26px 0 18px;display:flex;align-items:center;gap:12px;font-size:.95rem}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+form.fb{text-align:left;max-width:520px;margin:0 auto}
+.fb .f{margin-bottom:16px}
+.fb label{display:block;font-size:.9rem;color:var(--mut);margin-bottom:6px}
+.fb input,.fb textarea{width:100%;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;font-size:16px;transition:border-color .2s}
+.fb textarea{min-height:130px;resize:vertical}
+.fb input:focus,.fb textarea:focus{outline:0;border-color:var(--accent)}
+.fb .f.err input,.fb .f.err textarea{border-color:#d9534f}
+.fb .e{display:none;color:#d9534f;font-size:.85rem;margin-top:5px}
+.fb .f.err .e{display:block}
+.fb .btn{width:100%}
+.fb .btn:disabled{opacity:.6;cursor:default;transform:none}
+.status{display:none;margin-bottom:14px;padding:12px 14px;border-radius:10px;font-size:.95rem;border:1px solid var(--accent);color:var(--accent)}
+.status.show{display:block}
+.status.bad{border-color:#d9534f;color:#d9534f}
 footer{text-align:center;color:var(--mut);padding:28px 0;font-size:.9rem;border-top:1px solid var(--line)}
 
 @media (max-width:640px){
@@ -128,15 +146,15 @@ footer{text-align:center;color:var(--mut);padding:28px 0;font-size:.9rem;border-
       <div class="grid">
 
         <article class="card">
-          <h3>Проект 1</h3>
-          <p>Краткое описание первого проекта: что это за сайт и какие технологии использованы.</p>
+          <h3>Автосалон «Вектор»</h3>
+          <p>Одностраничный сайт автосалона: услуги, форма записи на осмотр и контакты. Адаптивная вёрстка на HTML, CSS и JavaScript.</p>
           <!-- Ссылка на первый проект (при необходимости замените) -->
           <a href="https://fiudgin666-netizen.github.io/my-first-project/" target="_blank" rel="noopener">Открыть проект →</a>
         </article>
 
         <article class="card">
-          <h3>Проект 2</h3>
-          <p>Краткое описание второго проекта: что это за сайт и какие технологии использованы.</p>
+          <h3>BLACKWOOD BARBERSHOP</h3>
+          <p>Демонстрационный сайт премиального барбершопа: галерея, мастера, онлайн-запись с проверкой формы и отправкой заявок на почту. HTML, CSS и JavaScript.</p>
           <!-- Ссылка на второй проект (при необходимости замените) -->
           <a href="https://fiudgin666-netizen.github.io/blackwood/" target="_blank" rel="noopener">Открыть проект →</a>
         </article>
@@ -153,6 +171,16 @@ footer{text-align:center;color:var(--mut);padding:28px 0;font-size:.9rem;border-
         <p>Есть вопрос или предложение? Напишите мне, и я отвечу как можно скорее.</p>
         <!-- Почта для кнопки (при необходимости замените) -->
         <a class="btn" href="mailto:belov.vlad.1@bk.ru?subject=Сообщение с сайта-портфолио">Написать на почту</a>
+
+        <div class="or">или заполните форму</div>
+        <form class="fb" id="fb" novalidate>
+          <div class="f"><label for="fn">Имя</label><input id="fn" name="name" autocomplete="name" placeholder="Как к вам обращаться"><div class="e">Введите имя (минимум 2 буквы)</div></div>
+          <div class="f"><label for="fe">Email</label><input id="fe" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com"><div class="e">Введите корректный email</div></div>
+          <div class="f"><label for="fm">Сообщение</label><textarea id="fm" name="message" placeholder="Ваше сообщение"></textarea><div class="e">Напишите сообщение (минимум 5 символов)</div></div>
+          <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
+          <div class="status" id="st" role="status" aria-live="polite"></div>
+          <button class="btn" type="submit">Отправить сообщение</button>
+        </form>
       </div>
     </div>
   </section>
@@ -167,3 +195,56 @@ footer{text-align:center;color:var(--mut);padding:28px 0;font-size:.9rem;border-
   menu.addEventListener('click', () => {
     const open = nav.classList.toggle('open');
     menu.setAttribute('aria-expanded', open);
+  });
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    nav.classList.remove('open');
+    menu.setAttribute('aria-expanded', false);
+  }));
+
+  // Текущий год в подвале
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Форма обратной связи (FormSubmit: https://formsubmit.co)
+  // Письма приходят на этот адрес. При первой отправке FormSubmit пришлёт письмо с подтверждением — активируйте форму.
+  const FORMSUBMIT_EMAIL = "belov.vlad.1@bk.ru";
+  const fb = document.getElementById('fb'), st = document.getElementById('st');
+  const rules = {
+    fn: v => v.trim().length >= 2,
+    fe: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),
+    fm: v => v.trim().length >= 5
+  };
+  const check = id => { const el = document.getElementById(id), ok = rules[id](el.value); el.parentElement.classList.toggle('err', !ok); return ok; };
+  Object.keys(rules).forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('blur', () => check(id));
+    el.addEventListener('input', () => el.parentElement.classList.remove('err'));
+  });
+  const show = (text, bad) => { st.textContent = text; st.className = 'status show' + (bad ? ' bad' : ''); st.scrollIntoView({block: 'nearest'}); };
+  fb.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!Object.keys(rules).map(check).every(Boolean)) {
+      show('Заполните все поля корректно.', true);
+      const bad = fb.querySelector('.err input,.err textarea'); if (bad) bad.focus();
+      return;
+    }
+    const v = Object.fromEntries(new FormData(fb));
+    if (v._honey) return; // защита от ботов
+    const btn = fb.querySelector('button[type=submit]'), label = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Отправляем…'; st.className = 'status';
+    try {
+      const r = await fetch('https://formsubmit.co/ajax/' + FORMSUBMIT_EMAIL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        body: JSON.stringify({name: v.name.trim(), email: v.email.trim(), message: v.message.trim(),
+          _subject: 'Новое сообщение с портфолио', _template: 'table', _captcha: 'false'})
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !(j.success === true || j.success === 'true')) throw new Error(j.message || ('HTTP ' + r.status));
+      show('Спасибо! Ваше сообщение отправлено.', false); fb.reset();
+    } catch (err) {
+      show('Не удалось отправить сообщение. Попробуйте ещё раз или напишите на почту.', true);
+    } finally { btn.disabled = false; btn.textContent = label; }
+  });
+</script>
+</body>
+</html>
